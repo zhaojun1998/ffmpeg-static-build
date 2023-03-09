@@ -10,6 +10,7 @@ env:
   IMAGE_NAME: static-ffmpeg
   BUILD_DIR: .github
   DOCKER_BUILDKIT: 1
+  CPU_ARCH: $(dpkg --print-architecture)
 
 jobs:
   build_and_release:
