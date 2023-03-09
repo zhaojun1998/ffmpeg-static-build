@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [ 5.0, 5.1, 6.0 ]
+        version: [4.1, 5.0]
         include:
           - goarch: amd64
             goos: linux
