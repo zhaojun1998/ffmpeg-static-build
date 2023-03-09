@@ -9,6 +9,7 @@ on:
 env:
   IMAGE_NAME: static-ffmpeg
   BUILD_DIR: .github
+  DOCKER_BUILDKIT: 1
 
 jobs:
   build_and_release:
@@ -16,11 +17,8 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest，ubuntu-latest-arm64 ]
-        version: [4.1, 5.0]
+        version: [ 5.0, 5.1, 6.0 ]
     steps:
-      - name: Print OS and arch
-        run: |
-          echo "Running on ${{ runner.os }} - ${{ runner.arch }}"
       - name: Checkout Repository
         uses: actions/checkout@v2
 #      - name: Build Docker Image
@@ -28,15 +26,12 @@ jobs:
 #          DOCKER_BUILDKIT=1 docker build --build-arg FFMPEG_VERSION=${{ matrix.variant }} --output type=local,dest=${BUILD_DIR} -t ${IMAGE_NAME} .
       - name: Package Build Directory
         run: |
-          tar -czvf ffmpeg-${{ matrix.version }}-${{ runner.os }}-${{ runner.arch }}.tar.gz ${BUILD_DIR}
-      - name: Uploading assets...
-        if: ${{ !env.ACT }}
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CPU_ARCH=$(dpkg --print-architecture)
+          tar -czvf ffmpeg-${{ matrix.version }}-linux-${CPU_ARCH}.tar.gz ${BUILD_DIR}
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./ffmpeg-${{ matrix.version }}-${{ runner.os }}-${{ runner.arch }}.tar.gz
-          asset_name: ffmpeg-${{ matrix.version }}-${{ runner.os }}-${{ runner.arch }}.tar.gz
-          asset_content_type: application/gzip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ffmpeg-${{ matrix.version }}-linux-${CPU_ARCH}.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
