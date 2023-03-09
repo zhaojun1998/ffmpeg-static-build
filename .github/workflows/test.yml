@@ -10,7 +10,6 @@ env:
   IMAGE_NAME: static-ffmpeg
   BUILD_DIR: .github
   DOCKER_BUILDKIT: 1
-  CPU_ARCH: $(dpkg --print-architecture)
 
 jobs:
   build_and_release:
@@ -24,7 +23,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Package Build Directory
         run: |
-          CPU_ARCH=$(dpkg --print-architecture)
+          CPU_ARCH=$(dpkg --print-architecture) 
+          echo $CPU_ARCH 
           tar -czvf ffmpeg-${{ matrix.version }}-linux-${CPU_ARCH}.tar.gz ${BUILD_DIR}
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
