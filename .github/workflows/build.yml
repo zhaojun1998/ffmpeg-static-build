@@ -32,14 +32,10 @@ jobs:
       - name: Package Build Directory
         run: |
           tar -czvf ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz ${BUILD_DIR}/ffmpeg-${{ matrix.version }}
-      - name: Uploading assets...
-        if: ${{ !env.ACT }}
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz
-          asset_name: ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz
-          asset_content_type: application/gzip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
