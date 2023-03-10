@@ -890,6 +890,7 @@ RUN \
 # make sure binaries has no dependencies, is relro, pie and stack nx
 COPY checkelf /
 RUN \
+  chmod +x /checkelf && \
   /checkelf /usr/local/bin/ffmpeg && \
   /checkelf /usr/local/bin/ffprobe
 
@@ -915,8 +916,8 @@ FROM scratch AS final2
 
 COPY --from=final1 /doc /doc
 COPY --from=final1 /etc /etc
-COPY --from=final1 /ffmpeg /ffmpeg
-COPY --from=final1 /ffprobe /ffprobe
+COPY --from=final1 /ffmpeg /bin/ffmpeg
+COPY --from=final1 /ffprobe /bin/ffprobe
 COPY --from=final1 /versions.json /versions.json
 
 FROM final2
