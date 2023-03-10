@@ -1,0 +1,39 @@
+name: Build and Release Static FFmpeg
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+
+env:
+  IMAGE_NAME: static-ffmpeg
+  BUILD_DIR: .github
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  build_and_release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest，ubuntu-latest-arm64 ]
+        version: [ '5.0', '5.1', '6.0' ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Package Build Directory
+        run: |
+          CPU_ARCH=$(dpkg --print-architecture)
+          if [ "$CPU_ARCH" = "arm64" ]; then
+           ARCH=arm64
+          else
+           ARCH=amd64
+          fi
+          tar -czvf ffmpeg-${{ matrix.version }}-linux-$ARCH.tar.gz ${BUILD_DIR}
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ffmpeg-${{ matrix.version }}-linux-$ARCH.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
