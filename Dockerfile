@@ -768,7 +768,7 @@ RUN \
   --enable-fontconfig \
   --enable-gray \
   --enable-iconv \
-  --enable-lcms2=$(if [ "$FFMPEG_VERSION" = "6.0" ]; then echo "yes"; else echo "no"; fi) \
+  $( [ "$FFMPEG_VERSION" = "6.0" ] && echo --enable-lcms2 || true ) \
   --enable-libaom \
   --enable-libaribb24 \
   --enable-libass \
