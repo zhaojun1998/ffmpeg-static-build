@@ -19,9 +19,9 @@ jobs:
         os: [ buildjet-4vcpu-ubuntu-2204, buildjet-4vcpu-ubuntu-2204-arm ]
         version: [ '5.0','5.1','6.0' ]
         include:
-          - os: ubuntu-latest
+          - os: buildjet-4vcpu-ubuntu-2204
             arch: amd64
-          - os: ubuntu-latest-arm64
+          - os: buildjet-4vcpu-ubuntu-2204-arm
             arch: arm64
     steps:
       - name: Checkout Repository
