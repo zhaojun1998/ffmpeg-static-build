@@ -1,0 +1,39 @@
+name: Build and Release Static FFmpeg (Only ARM64)
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+
+env:
+  IMAGE_NAME: static-ffmpeg
+  BUILD_DIR: ~/build
+
+jobs:
+  build_and_release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ buildjet-4vcpu-ubuntu-2204-arm ]
+        version: [ '5.0','5.1','6.0' ]
+        include:
+          - os: buildjet-4vcpu-ubuntu-2204-arm
+            arch: arm64
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Build Docker Image
+        run: |
+          DOCKER_BUILDKIT=1 docker build --build-arg FFMPEG_VERSION=${{ matrix.version }} --output type=local,dest=${BUILD_DIR}/ffmpeg-${{ matrix.version }} -t ${IMAGE_NAME} .
+      - name: Package Build Directory
+        run: |
+          tar -czvf ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz -C ${BUILD_DIR} ffmpeg-${{ matrix.version }}
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
