@@ -28,10 +28,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Build Docker Image
         run: |
-          DOCKER_BUILDKIT=1 docker build --build-arg FFMPEG_VERSION=${{ matrix.version }} --output type=local,dest=${BUILD_DIR}/ffmpeg-${{ matrix.version }} -t ${IMAGE_NAME} .
+          DOCKER_BUILDKIT=1 docker build --build-arg FFMPEG_VERSION=${{ matrix.version }} --output type=local,dest=${BUILD_DIR}/ffmpeg-${{ matrix.arch }}-${{ matrix.version }} -t ${IMAGE_NAME} .
       - name: Package Build Directory
         run: |
-          tar -czvf ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz -C ${BUILD_DIR} ffmpeg-${{ matrix.version }}
+          tar -czvf ffmpeg-${{ matrix.version }}-linux-${{ matrix.arch }}.tar.gz -C ${BUILD_DIR} ffmpeg-${{ matrix.arch }}-${{ matrix.version }}
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
