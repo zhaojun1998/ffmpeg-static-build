@@ -12,11 +12,11 @@ env:
 
 jobs:
   build_and_release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest,ubuntu-latest-arm64 ]
+        os: [ buildjet-4vcpu-ubuntu-2204, buildjet-4vcpu-ubuntu-2204-arm ]
         version: [ '5.0','5.1','6.0' ]
         include:
           - os: ubuntu-latest
